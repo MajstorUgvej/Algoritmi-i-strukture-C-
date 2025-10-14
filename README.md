@@ -1,2 +1,2 @@
-# Algoritmi-i-strukture-C-
-Moji zadatci iz vezbanja algoritama i struktura
+# Algoritmi i strukture C++
+Moji zadatci iz algoritama i struktura podataka kada sam ucio programiranje :-|
