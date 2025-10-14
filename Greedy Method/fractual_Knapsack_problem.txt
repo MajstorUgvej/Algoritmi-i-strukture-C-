@@ -1,0 +1,56 @@
+#include <iostream>
+#include <vector>
+
+float* FracKnapsack(int profit[], int weight[], int n, int m)
+{
+	float* x = new float[n];
+	float *pbw = new float[n];
+	float maxProf = 0;
+	int brojac = 0;
+
+	for (int i = 0;i < n;i++)
+	{
+		pbw[i] = (float)profit[i] / weight[i];
+		x[i] = 0;
+	}
+
+	while (brojac<n)
+	{
+		int max = -1, ind = -1;
+		for (int i = 0;i < n;i++)
+		{
+			if (x[i] == 0 && pbw[i] > max)
+			{
+				ind = i;
+				max = pbw[i];
+			}
+		}
+		if (weight[ind] <= m)
+		{
+			m -= weight[ind];
+			x[ind] = 1;
+			maxProf += profit[ind];
+			brojac++;
+		}
+		else
+		{
+			x[ind] = (float)m / weight[ind];
+			maxProf += x[ind] * profit[ind];
+			break;
+		}
+	}
+	std::cout << "Max profit is: " << maxProf << "\n";
+	delete[] pbw;
+	return x;
+}
+
+int main() {
+	int Profits[] = { 12,17,9,7,5,21,8 };
+	int Weights[] = { 2,5,7,3,1,4,1 };
+	int n = std::size(Profits), m = 15;
+	float*x = FracKnapsack(Profits, Weights, n, m);
+	for (int i = 0; i < n; i++)
+	{
+		std::cout << x[i] << " ";
+	}
+}

@@ -1,0 +1,211 @@
+#include <vector>
+#include <iostream>
+
+using namespace std;
+
+class node
+{
+public:
+	int val;
+	node* next;
+};
+
+node* head = nullptr, *tail = nullptr;
+
+void insert(int index, int val);
+void display();
+void insertLast(int val);
+void insertInSorted(int val);
+void DeleteNode(int index);
+void FreeLL(node* first);
+bool CheckSorted();
+void RemoveDuplicates();
+void reverse();
+void Rreverse(node* q, node*p);
+
+int main()
+{
+	int niz[] = { 1,2,3,4,5 };
+	for (int i = 0; i < sizeof(niz)/sizeof(niz[0]); i++)
+	{
+		insertLast(niz[i]);
+	}
+	display(); 
+	Rreverse(nullptr, head);
+	display();
+	FreeLL(head);
+}
+
+void Rreverse(node*q, node*p)
+{
+	if (!p)
+		head = q;
+	else
+	{
+		Rreverse(p, p->next);
+		p->next = q;
+	}
+}
+
+void reverse()
+{
+	node* r = nullptr, * q = nullptr, * p = head;
+	while (p)
+	{
+		r = q;
+		q = p;
+		p = p->next;
+		q->next = r;
+	}
+	head = q;
+}
+
+void insert(int index, int val)
+{
+	node* temp = new node;
+	temp->val = val;
+	if (index == 0)
+	{
+		temp->next = head;
+		head = temp;
+	}
+	else
+	{
+		node* ptr = head;
+		for (int i = 1; i < index && ptr != nullptr; i++)
+		{
+			ptr = ptr->next;
+		}
+		if (ptr != nullptr)
+		{
+			temp->next = ptr->next;
+			ptr->next = temp;
+		}
+	}
+}
+
+void display()
+{
+	for (node* ptr = head; ptr != nullptr; ptr = ptr->next)
+	{
+		cout << ptr->val;
+		if (ptr->next != nullptr)
+			cout << "->";
+	}
+	cout << endl;
+}
+
+void insertLast(int val)
+{
+	node* temp = new node;
+	temp->val = val;
+	temp->next = nullptr;
+	if (head == nullptr)
+	{
+		head = tail = temp;
+	}
+	else
+	{
+		tail->next = temp;
+		tail = temp;
+	}
+}
+
+void insertInSorted(int val)
+{
+	node* temp = new node;
+	temp->val = val;
+	temp->next = nullptr;
+	if (head == nullptr)
+	{
+		head = temp;
+	}
+	else
+	{
+		if (head->val > val)
+		{
+			temp->next = head;
+			head = temp;
+		}
+		else
+		{
+			node* q = nullptr;
+			for (node* ptr = head; ptr != nullptr; ptr = ptr->next)
+			{
+				if (ptr->val > val)
+				{
+					break;
+				}
+				q = ptr;
+			}
+			temp->next = q->next;
+			q->next = temp;
+		}
+		
+	}
+	
+}
+
+void DeleteNode(int index)
+{
+	if (index < 1)
+		return;
+	if (index == 1)
+	{
+		node* q = head;
+		head = head->next;
+		delete q;
+	}
+	else
+	{
+		node* p = head,* q = nullptr;
+		for (int i = 2; p && i <= index; i++) {
+			q = p;
+			p = p->next;
+		};
+		if (p)
+		{
+			q->next = p->next;
+			delete p;
+		}
+	}
+}
+
+void FreeLL(node* first)
+{
+	while (first)
+	{
+		node* help = first;
+		first = first->next;
+		delete help;
+	}
+}
+
+bool CheckSorted()
+{
+	for (node* ptr = head, *q = head; ptr; ptr = ptr->next)
+	{
+		if (ptr->val < q->val)
+			return false;
+		q = ptr;
+	}
+	return true;
+}
+
+void RemoveDuplicates()
+{
+	if (!head || !head->next)
+		return;
+
+	for (node* p = head->next, *q = head; p; p = p->next)
+	{
+		if (q->val == p->val)
+		{
+			node* temp = p;
+			q->next = p->next;
+			delete temp;
+			p = q;
+		}
+		q = p;
+	}
+}

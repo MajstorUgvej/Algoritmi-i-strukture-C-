@@ -1,0 +1,56 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <stack>
+
+int matr[8][8] = {
+	{-1,-1,-1,-1,-1,-1,-1,-1},
+	{-1,0,1,1,1,0,0,0},
+	{-1,1,0,0,0,1,0,0},
+	{-1,1,0,0,0,0,0,0},
+	{-1,1,0,0,0,0,0,1},
+	{-1,0,1,0,0,0,1,0},
+	{-1,0,0,0,0,1,0,0},
+	{-1,0,0,0,4,0,0,0}
+};
+
+int n = 8;
+
+void BFS()
+{
+	std::queue<int> q;
+	std::vector<bool> visited(n, false);
+
+	// for finding starting element
+	for (int i = 1; i < n && q.empty(); i++)
+	{
+		for (int j = 1; j < n; j++)
+		{
+			if (matr[i][j] == 1)
+			{
+				q.push(i);
+				visited[i] = true;
+				break;
+			}
+		}
+	}
+	std::cout << "BFS: ";
+	while (!q.empty())
+	{
+		int x = q.front();
+		std::cout << x << " ";
+		q.pop();
+		for(int i = 1; i < n; i++)
+			if (matr[x][i] == 1 && !visited[i])
+			{
+				q.push(i);
+				visited[i] = true;
+			}
+	}
+	
+}
+
+int main()
+{
+	BFS();
+}

@@ -1,0 +1,64 @@
+#include <iostream>
+#include <vector>
+
+int Prim(const std::vector<std::vector<int>>& M, int n)
+{
+	std::vector<bool> visited(n + 1, false);
+	int* near = new int[n + 1];
+	int brE = 1, min = INT_MAX, u = 1, v = 0;
+
+	for (int i = 1; i <= n; i++)
+	{
+		if (M[u][i] < min)
+		{
+			min = M[u][i];
+			v = i;
+		}
+	}
+	int minCost = min;
+	visited[u] = visited[v] = true;
+	for (int i = 1; i <= n; i++)
+	{
+		if (!visited[i])
+			near[i] = M[i][v] < M[i][u] ? v : u;
+	}
+
+	while (brE < n-1)
+	{
+		min = INT_MAX;
+		for (int i = 1; i <= n; i++) {
+			if (!visited[i] && M[i][near[i]] < min) {
+				min = M[i][near[i]];
+				u = i;
+				v = near[i];
+			}
+		}
+		visited[u] = true;
+		minCost += min;
+		brE++;
+		for (int i = 1; i <= n; i++) {
+			if (!visited[i] && M[i][u] < M[i][near[i]])
+				near[i] = u;
+		}
+	}
+	delete[] near;
+	return minCost;
+}
+
+int main()
+{
+	int n = 7;
+	std::vector<std::vector<int>> M((n + 1), std::vector<int>((n + 1), INT_MAX));
+	M[1][2] = M[2][1] = 28;
+	M[1][6] = M[6][1] = 10;
+	M[2][3] = M[3][2] = 16;
+	M[3][4] = M[4][3] = 12;
+	M[4][5] = M[5][4] = 22;
+	M[5][6] = M[6][5] = 25;
+	M[5][7] = M[7][5] = 24;
+	M[2][7] = M[7][2] = 14;
+	M[4][7] = M[7][4] = 18;
+
+	std::cout << "Min cost span Tree: " << Prim(M, n);
+
+}

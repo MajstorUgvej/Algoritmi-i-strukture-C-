@@ -1,0 +1,63 @@
+#include <vector>
+#include <iostream>
+
+using namespace std;
+
+int Row_moves[4] = { 0,1,0,-1 };
+int Col_moves[4] = { 1,0,-1,0 };
+char moves[4] = { 'R','D','L','U' };
+
+bool valid(vector<vector<int>>& matr, int row, int col, int n, int i)
+{
+	row = row + Row_moves[i];
+	col = col + Col_moves[i];
+	if (row < 0 || row == n || col < 0 || col == n || matr[row][col] == 0)	//Check whether it is in bounds
+		return false;
+	return true;
+}
+
+void RatMaze(vector<vector<int>>& matr, int row, int col, int &n, string Commands)
+{
+	if (row == n - 1 && col == n - 1)
+	{
+		cout << Commands << endl << endl;
+	}
+	else if (matr[row][col] == 1)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			matr[row][col] = 2;
+			Commands += moves[i];
+			if (valid(matr, row, col, n, i))
+				RatMaze(matr, row + Row_moves[i], col + Col_moves[i], n, Commands);
+			Commands.pop_back();
+			matr[row][col] = 1;
+		}
+	}
+}
+
+int main()
+{
+	int n;
+	cout << "Enter n: ";
+	cin >> n;
+	vector<vector<int>> matr(n, vector<int>(n, 1));
+	cout << "Enter maze:" << endl;
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n; j++)
+			cin >> matr[i][j];	//1 za prolaz, 0 za zabranjeno
+	}
+
+	/*Test primer
+	matr[0][1] = 0;
+	matr[0][2] = 0;
+	matr[0][3] = 0;
+	matr[1][2] = 0;
+	matr[2][2] = 0;
+	matr[2][3] = 0;*/
+
+	cout << endl;
+	RatMaze(matr, 0, 0, n, "");
+
+}

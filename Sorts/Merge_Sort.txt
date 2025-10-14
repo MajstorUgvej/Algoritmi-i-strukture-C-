@@ -1,0 +1,86 @@
+#include <iostream>
+
+/*
+	comparisons: nlogn
+	swaps: nlogn
+	adaptive: no
+	stable: yes
+	extra memory: Auxilary array(n)
+*/
+
+void Merge(int A[], int l, int mid, int h)
+{
+	int i, j, k;
+	int* B = new int[h + 1];	//	Bolja verzija je gde ovo inicijalizujes u main-u i samo prosledjujes kao parametar
+
+	i = l, j = mid + 1, k = l;
+	while (i <= mid && j <= h)
+	{
+		if (A[i] < A[j])
+			B[k++] = A[i++];
+		else
+			B[k++] = A[j++];
+	}
+	while (i <= mid)
+		B[k++] = A[i++];
+	while (j <= h)
+		B[k++] = A[j++];
+
+	for(int i = l; i <= h; i++)
+		A[i] = B[i];
+
+	delete[] B;
+}
+
+//time: O(nlogn), space: O(nlogn)
+void MergeSort(int niz[], int l, int h)
+{
+	if (l < h)
+	{
+		int mid = (l + h) / 2;
+		MergeSort(niz, l, mid);
+		MergeSort(niz, mid + 1, h);
+		Merge(niz, l, mid, h);
+	}
+}
+
+void IterativeMergeSort(int niz[], int n)
+{
+	int p, i, l, h, mid;
+	for (p = 2; p <= n; p *= 2)
+	{
+		for (i = 0; i <= n - p; i += p)
+		{
+			l = i;
+			h = l + p - 1;
+			mid = (l + h) / 2;
+			Merge(niz, l, mid, h);
+		}
+		if (n - i > p / 2)
+		{
+			l = i;
+			h = i + p - 1;
+			mid = (l + h) / 2;
+			Merge(niz, l, mid, n - 1);
+		}
+	}
+	if (n > p / 2)
+	{
+		Merge(niz, 0, p / 2 - 1, n - 1);
+	}
+}
+
+void Display(int niz[], int n)
+{
+	for (int i = 0; i < n; i++)
+		std::cout << niz[i] << " ";
+	std::cout << std::endl;
+}
+
+int main()
+{
+	int niz[] = { 5, 8, 4, 2, 3, 7, 6, 1, 0, 9, -1, 2, -2 };
+	int n = std::size(niz);
+	MergeSort(niz, 0, n - 1);
+	Display(niz, n);
+}

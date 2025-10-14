@@ -1,0 +1,80 @@
+#include <iostream>
+#include <vector>
+
+/*
+	comparisons: dn
+	swaps: dn?
+	adaptive: no
+	stable: no
+	extra memory: n
+*/
+
+
+struct node
+{
+	int val;
+	node* next;
+
+	node(int val) : val(val), next(nullptr) {};
+	node() : val(0), next(nullptr) {};
+};
+
+//time: O(n) {O(dn) d-broj cifara}, space: O(n)
+void RadixSort(int niz[], int n)
+{
+	std::vector<node*> Auxniz(10, nullptr); // Jer dekadni sistem ima cifre od 0 do 9
+	int pojacivac = 1;
+	int i, k;
+
+	int max = niz[0];
+	for (int i = 1; i < n; i++)
+		max = std::max(max, niz[i]);
+
+	while (pojacivac<max)
+	{
+		for (i = 0; i < n; i++)
+		{
+			int place = (niz[i] / pojacivac) % 10;
+			node* t = new node(niz[i]);
+			if (Auxniz[place])
+			{
+				node* p = Auxniz[place];
+				while (p->next)
+					p = p->next;
+				p->next = t;
+			}
+			else
+				Auxniz[place] = t;
+		}
+		k = i = 0;
+		while (k < 10)
+		{
+			if (Auxniz[k])
+			{
+				niz[i++] = Auxniz[k]->val;
+				node* t = Auxniz[k];
+				Auxniz[k] = Auxniz[k]->next;
+				delete t;
+			}
+			else
+				k++;
+		}
+		pojacivac *= 10;
+	}
+}
+
+
+void Display(int niz[], int n)
+{
+	for (int i = 0; i < n; i++)
+		std::cout << niz[i] << " ";
+	std::cout << std::endl;
+}
+
+int main()
+{
+	int niz[] = { 237, 146, 259, 348, 152, 163, 235, 48, 62, 36, 9 };
+	int n = std::size(niz);
+	RadixSort(niz, n);
+	Display(niz, n);
+}

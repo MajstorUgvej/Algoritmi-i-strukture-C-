@@ -1,0 +1,40 @@
+#include <iostream>
+
+/*
+	Pravljen za linked liste(jer u njima nema shiftovanja elemenata)
+	Comparisons - O(n^2)
+	Swaps - O(n^2)
+	Adaptive - yes
+	Stable - yes
+*/
+
+// time: O(n^2), space:O(1)
+void InsertionSort(int niz[], int n)
+{
+	for (int i = 1; i < n; i++)
+	{
+		int x = niz[i];
+		int j = i - 1;
+		while(j>-1 && niz[j] > x)
+		{
+			niz[j+1] = niz[j];
+			j--;
+		}
+		niz[j+1] = x;
+	}
+}
+
+void Display(int niz[], int n)
+{
+	for (int i = 0; i < n; i++)
+		std::cout << niz[i] << " ";
+	std::cout << std::endl;
+}
+
+int main()
+{
+	int niz[] = { 3,5,2,4,1,6,9,7,2 };
+	int n = sizeof(niz) / sizeof(niz[0]);
+	InsertionSort(niz, n);
+	Display(niz, n);
+}

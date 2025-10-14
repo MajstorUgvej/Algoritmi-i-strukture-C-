@@ -1,0 +1,78 @@
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+bool valid(vector<vector<int>> &matr, int row, int col, int choice)
+{
+	for (int i = 0; i < 9; i++)
+	{
+		if (i != col && matr[row][i] == choice)
+			return false;
+		if (i != row && matr[i][col] == choice)
+			return false;
+	}
+	int subCol = col / 3 * 3 + 3, subRow = row / 3 * 3 + 3;
+
+	for (int i = subRow - 3; i < subRow; i++)
+		for (int j = subCol - 3; j < subCol; j++)
+			if (!(i == row && j == col) && matr[i][j] == choice)
+				return false;
+	return true;
+}
+
+bool sudoku(vector<vector<int>> &matr, int row = 0, int col = 0)
+{
+	if (col == 9)
+	{
+		col = 0;
+		row++;
+	}
+	if (row == 9)
+		return true;
+
+	if (matr[row][col] == 0)
+	{
+		for (int i = 1; i <= 9; i++)
+		{
+			if (valid(matr, row, col, i))
+			{
+				matr[row][col] = i;
+				if (sudoku(matr, row, col + 1))
+					return true;
+				matr[row][col] = 0;
+			}
+		}
+		return false;
+	}
+	else
+		return sudoku(matr, row, col + 1);
+}
+
+int main()
+{
+	vector<vector<int>> tabla(9, vector<int>(9, 0));
+	
+	for (int i = 0; i < 9; i++)
+	{
+		for (int j = 0; j < 9; j++)
+			cin>> tabla[i][j];
+	}
+
+	if (!sudoku(tabla))
+	{
+		cout << endl << "Ne resivo" << endl;
+		return 0;
+	}
+
+	cout << endl;
+	for (int i = 0; i < 9; i++)
+	{
+		for (int j = 0; j < 9; j++)
+			cout << tabla[i][j] << " ";
+		cout << endl;
+	}
+	cout << endl;
+}
+

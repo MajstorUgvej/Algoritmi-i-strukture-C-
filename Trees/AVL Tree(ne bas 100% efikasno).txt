@@ -1,0 +1,284 @@
+#include <iostream>
+
+struct node {
+	int val;
+	node* left;
+	node* right;
+	int height;
+
+	node(int data) :val(data), left(nullptr), right(nullptr), height(1) {};
+};
+//AVL(Insert with rotation(LL,RR,LR,RL))
+class AVLTree
+{
+	node* root;
+	void free(node* p)
+	{
+		if (p)
+		{
+			free(p->left);
+			free(p->right);
+			delete p;
+		}
+	}
+public:
+	AVLTree() { root = nullptr; };
+	~AVLTree() { free(root); };
+	int Height(node* p);
+	int BalanceFactor(node* p);
+	node* Insert(int key, node*p);
+	node* LLRotation(node* p);
+	node* RRRotation(node* p);
+	node* LRRotation(node* p);
+	node* RLRotation(node* p);
+	void Preorder(node* p);
+	void Inorder(node* p);
+	node* getRoot() { return root; };
+	node* Delete(node *p, int key);
+	node* Predcesor(node* p);
+	node* Succsesor(node* p);
+	void Insert(int key) {
+		root = Insert(key, root);
+	}
+
+	void Delete(int key) {
+		root = Delete(root, key);
+	}
+
+
+};
+
+node* AVLTree::Succsesor(node* p)
+{
+	p = p->right;
+	if (p)
+		while (p->left)
+			p = p->left;
+	return p;
+}
+
+node* AVLTree::Predcesor(node* p)
+{
+	p = p->left;
+	if (p)
+		while (p->right)
+			p = p->right;
+	return p;
+}
+
+node* AVLTree::RRRotation(node* p)
+{
+	node* pr = p->right;
+	node* prl = pr->left;
+
+	pr->left = p;
+	p->right = prl;
+
+	p->height = Height(p);
+	pr->height = Height(pr);
+
+	if (root == p)
+		root = pr;
+
+	return pr;
+}
+
+node* AVLTree::LRRotation(node* p)
+{
+	node* pl = p->left;
+	node* plr = pl->right;
+
+	p->left = plr->right;
+	pl->right = plr->left;
+
+	plr->left = pl;
+	plr->right = p;
+
+	p->height = Height(p);
+	pl->height = Height(pl);
+	plr->height = Height(plr);
+
+	if (root == p)
+		root = plr;
+
+	return plr;
+}
+
+node* AVLTree::RLRotation(node* p)
+{
+	node* pr = p->right;
+	node* prl = pr->left;
+
+	p->right = prl->left;
+	pr->left = prl->right;
+
+	prl->left = p;
+	prl->right = pr;
+
+	p->height = Height(p);
+	pr->height = Height(pr);
+	prl->height = Height(prl);
+
+
+	if (root == p)
+		root = prl;
+
+	return prl;
+}
+
+void AVLTree::Inorder(node* p)
+{
+	if (p)
+	{
+		Inorder(p->left);
+		std::cout << p->val << " ";
+		Inorder(p->right);
+	}
+}
+
+node* AVLTree::Delete(node* p, int key)
+{
+	if (p)
+	{
+		if (key < p->val)
+			p->left = Delete(p->left, key);
+		else if (key > p->val)
+			p->right = Delete(p->right, key);
+		else
+		{
+			node* q;
+			if (Height(p->left) > Height(p->right))
+				q = Predcesor(p);
+			else
+				q = Succsesor(p);
+
+			if (q)
+			{
+				p->val = q->val;
+				if (Height(p->left) > Height(p->right))
+					p->left = Delete(p->left, q->val);
+				else
+					p->right = Delete(p->right, q->val);
+			}
+			else
+			{
+				if (root == p)
+					root = nullptr;
+				delete p;
+				return nullptr;
+			}
+		}
+		p->height = Height(p);
+
+		
+		if (BalanceFactor(p) == 2 && BalanceFactor(p->left) == 1) // L1 rotation
+			return LLRotation(p);
+		else if (BalanceFactor(p) == 2 && BalanceFactor(p->left) == -1) // L-1 rotation
+			return LRRotation(p);
+		else if (BalanceFactor(p) == 2 && BalanceFactor(p->left) == 0) // L0 rotation
+			return LLRotation(p);
+		else if (BalanceFactor(p) == -2 && BalanceFactor(p->right) == -1) // R1 rotation
+			return RRRotation(p);
+		else if (BalanceFactor(p) == -2 && BalanceFactor(p->right) == 1) // R-1 rotation
+			return RLRotation(p);
+		else if (BalanceFactor(p) == -2 && BalanceFactor(p->right) == 0) // R0 rotation
+			return RRRotation(p);
+	}
+	return p;
+}
+
+void AVLTree::Preorder(node *p)
+{
+	if (p)
+	{
+		std::cout << p->val << " ";
+		Preorder(p->left);
+		Preorder(p->right);
+	}
+}
+
+node* AVLTree::LLRotation(node* p)
+{
+	node* pl = p->left;
+	node* plr = pl->right;
+
+	pl->right = p;
+	p->left = plr;
+
+	p->height = Height(p);
+	pl->height = Height(pl);
+
+	if (root == p)
+		root = pl;
+
+	return pl;
+}
+
+int AVLTree::Height(node* p)
+{
+	if (!p)
+		return -1;
+
+	int left = p->left ? p->left->height : 0;
+	int right = p->right ? p->right->height : 0;
+
+	return left > right ? left + 1 : right + 1;
+}
+
+int AVLTree::BalanceFactor(node* p)
+{
+	if (!p)
+		return -1;
+
+	int left = p->left ? p->left->height : 0;
+	int right = p->right ? p->right->height : 0;
+
+	return left - right;
+}
+
+node* AVLTree::Insert(int key, node*p)
+{
+	if (p)
+	{
+		if (key < p->val)
+			p->left = Insert(key, p->left);
+		else if (key > p->val)
+			p->right = Insert(key, p->right);
+		else 
+			return p;
+
+		p->height = Height(p);
+
+		if (BalanceFactor(p) == 2 && BalanceFactor(p->left) == 1)
+			return LLRotation(p);
+		else if (BalanceFactor(p) == 2 && BalanceFactor(p->left) == -1)
+			return LRRotation(p);
+		else if (BalanceFactor(p) == -2 && BalanceFactor(p->right) == -1)
+			return RRRotation(p);
+		else if (BalanceFactor(p) == -2 && BalanceFactor(p->right) == 1)
+			return RLRotation(p);
+	}
+	else
+	{
+		node* t = new node(key);
+		if (root == nullptr)
+			root = t;
+		return t;
+	}
+	return p;
+}
+
+int main()
+{
+	AVLTree drvo;
+	drvo.Insert(20);
+	drvo.Insert(30);
+	drvo.Insert(25);
+	drvo.Insert(40);
+	drvo.Delete(20);
+
+	std::cout << "ROOT val: " << drvo.getRoot()->val << std::endl;
+
+	std::cout << "Inorder: "; drvo.Inorder(drvo.getRoot()); std::cout << std::endl;
+	std::cout << "Preorder: "; drvo.Preorder(drvo.getRoot()); std::cout << std::endl;
+}

@@ -1,0 +1,114 @@
+#include <iostream>
+#include <vector>
+
+struct Edge {
+	int start;
+	int end;
+	int weight;
+};
+
+Edge DeleteFromHeap(Edge A[], int h)
+{
+	std::swap(A[0], A[h]);
+	int curr = 0;
+	while ((curr+1)*2 <h)
+	{
+		int lchild = (curr + 1) * 2 - 1;
+		int rchild = (curr + 1) * 2;
+		int min = A[lchild].weight < A[rchild].weight ? lchild : rchild;
+		if (A[min].weight < A[curr].weight)
+		{
+			std::swap(A[min], A[curr]);
+			curr = min;
+		}
+		else
+			break;
+	}
+	int lchild = (curr + 1) * 2 - 1;
+	if(lchild == h-1 && A[lchild].weight < A[curr].weight)
+		std::swap(A[lchild], A[curr]);
+
+	return A[h];
+}
+
+void CreateMinHeap(Edge A[], int n)
+{
+	for (int i = 1; i < n; i++)
+	{
+		int parent = (i + 1) / 2 - 1, curr = i;
+		while (parent >= 0 && A[parent].weight > A[curr].weight)
+		{
+			std::swap(A[parent], A[curr]);
+			curr = parent;
+			parent = (curr + 1) / 2 - 1;
+		}
+	}
+}
+
+void Union(std::vector<int>& A, int u, int v)
+{
+	while (A[u] > 0)
+		u = A[u];
+	while (A[v] > 0)
+		v = A[v];
+
+	if (A[u] > A[v])
+	{
+		A[v] += A[u];
+		A[u] = v;
+	}
+	else
+	{
+		A[u] += A[v];
+		A[v] = u;
+	}
+}
+
+int Find(std::vector<int>& A, int u)
+{
+	while (A[u] > 0)
+		u = A[u];
+	return u;
+}
+
+int KruskalMethod(int edges[][3], int e, int n) { // e-edges, n-vertices
+	int minDest = 0;
+	Edge* A = new Edge[e];
+	int numE = 0;
+
+	for (int i = 0; i < e; i++)
+	{
+		A[i].start = edges[i][0];
+		A[i].end = edges[i][1];
+		A[i].weight = edges[i][2];
+	}
+
+	CreateMinHeap(A, e);
+
+	std::vector<int> dsjset(n + 1, -1);
+	
+	for (int i = 0; i < e && numE<n-1; i++)
+	{
+		Edge curr = DeleteFromHeap(A,e-1-i);
+		if (Find(dsjset, curr.start) != Find(dsjset, curr.end))
+		{
+			minDest += curr.weight;
+			Union(dsjset, curr.start, curr.end);
+			numE++;
+		}
+	}
+
+	delete[] A;
+	return minDest;
+}
+
+int main()
+{
+	int edges[9][3] = { {1,6,10},{1,2,28},{2,3,16},{2,7,14}, 
+		{3,4,12},{4,5,22},{4,7,18},{5,6,25},{5,7,24} };
+
+	int e = 9, n = 7;
+
+	std::cout << "Minimum Cost Spanning tree: " << KruskalMethod(edges, e, n);
+
+}

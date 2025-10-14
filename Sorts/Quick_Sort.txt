@@ -1,0 +1,57 @@
+#include <iostream>
+
+/*
+	comparisons: nlogn
+	swaps: nlogn
+	adaptive: no
+	stable: no
+	extra space: no
+*/
+
+void swap(int& a, int& b)
+{
+	int temp = a;
+	a = b;
+	b = temp;
+}
+
+int Partition(int niz[], int l, int h)
+{
+	int j = h, i = l;
+	int pivot = niz[l];
+	while (j > i)
+	{
+		do { i++; } while (i < h && niz[i] < pivot);
+		do { j--; } while (niz[j] > pivot);
+		if (j > i)
+			swap(niz[i], niz[j]);
+	}
+	swap(niz[j], niz[l]);
+	return j;
+}
+
+// time:O(nlogn), space:O(logn)
+void QuickSort(int niz[], int l, int h)
+{
+	if (l < h - 1)
+	{
+		int n = Partition(niz, l, h);
+		QuickSort(niz, n + 1, h);
+		QuickSort(niz, l, n);
+	}
+}
+
+void Display(int niz[], int n)
+{
+	for (int i = 0; i < n; i++)
+		std::cout << niz[i] << " ";
+	std::cout << std::endl;
+}
+
+int main()
+{
+	int niz[] = { 8,6,3,5,2,5,4 };
+	int n = std::size(niz);
+	QuickSort(niz, 0, n);
+	Display(niz, n);
+}

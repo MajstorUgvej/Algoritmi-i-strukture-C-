@@ -1,0 +1,35 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+void swap(string &rec, int i, int l)
+{
+	char pom = rec[i];
+	rec[i] = rec[l];
+	rec[l] = pom;
+}
+
+void Permutacija(string rec, int l = 0)
+{
+	if (l == rec.length() - 1)
+	{
+		cout << rec << endl;
+		return;
+	}
+
+	for (int i = l, n = rec.length(); i < n; i++)
+	{
+		swap(rec, l, i);
+		Permutacija(rec, l + 1);
+		swap(rec, l, i);
+	}
+}
+
+int main()
+{
+	string test;
+	cin >> test;
+	Permutacija(test);
+}
+

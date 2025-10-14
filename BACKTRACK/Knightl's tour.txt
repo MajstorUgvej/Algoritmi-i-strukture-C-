@@ -1,0 +1,65 @@
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+
+bool valid(vector<vector<int>>& matr, int &row, int &col, int& i, int& n)
+{
+	int RowNiz[8] = { 2,1,-1,-2,-2,-1,1,2 };
+	int ColNiz[8] = { 1,2,2,1,-1,-2,-2,-1 };
+	row += RowNiz[i];
+	col += ColNiz[i]; 
+
+	if (row < 0 || row >= n || col < 0 || col >= n) // Check whether it is out of bounds
+		return false;
+	if (matr[row][col] != -1) // Check whether the cell is taken
+		return false;
+	
+	return true;
+}
+
+bool Knight_Tour(vector<vector<int>>& matr,int row, int col, int skok, int n)
+{
+	if (skok == n * n - 1)
+	{
+		matr[row][col] = skok;
+		return true;
+	}
+	
+	for (int i = 0; i < 8; i++)
+	{
+		int OrgRow = row, OrgCol = col;
+		matr[row][col] = skok;
+		if (valid(matr, row, col, i, n) && Knight_Tour(matr, row, col, skok + 1, n))
+		{
+				return true;
+		}
+
+		row = OrgRow; col = OrgCol;
+		matr[row][col] = -1;
+	}
+	return false;
+}
+
+int main()
+{
+	int n;
+	cin >> n;
+	vector<vector<int>> tabla(n, vector<int>(n, -1));
+
+	if (!Knight_Tour(tabla, 0, 0, 0, n))
+		cout << "Ne resivo" << endl;
+	else
+	{
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+				cout << tabla[i][j] << " ";
+			cout << endl;
+		}
+	}
+
+}
+

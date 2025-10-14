@@ -1,0 +1,363 @@
+#include <iostream>
+#include <vector>
+
+struct node {
+	int val;
+	node* next;
+
+	node() : val(0), next(nullptr) {};
+	node(int val) : val(val), next(nullptr) {};
+};
+
+node* head = nullptr;
+
+void CreateLL_for_I_S()
+{
+	node* t1 = new node(2);
+	node* t2 = new node(4);
+	node* t3 = new node(5);
+	node* t4 = new node(6);
+	node* t5 = new node(3);
+	node* t6 = new node(7);
+
+	t1->next = t2;
+	t2->next = t3;
+	t3->next = t4;
+	t4->next = t5;
+	t5->next = t6;
+
+	head = t1;
+}
+
+
+void InsertInSorted(node* t)
+{
+	if (head->val > t->val)
+	{
+		t->next = head;
+		head = t;
+	}
+	else
+	{
+		node* p = head, * q = head;
+		while (p != t->next && p->val < t->val)
+		{
+			q = p;
+			p = p->next;
+		}
+		t->next = p;
+		q->next = t;
+	}
+}
+
+int Max(int A[], int n)
+{
+	int max = A[0];
+	for (int i = 1; i < n; i++)
+	{
+		max = std::max(A[i], max);
+	}
+	return max;
+}
+
+void Create_MaxHeap(int A[], int n)
+{
+	for (int i = 1; i < n; i++)
+	{
+		int parent = (i + 1) / 2 - 1;
+		int curr = i;
+		while (parent >= 0 && A[parent] < A[curr])
+		{
+			std::swap(A[parent], A[curr]);
+			curr = parent;
+			parent = (curr + 1) / 2 - 1;
+		}
+	}
+}
+
+void Delete_from_MaxHeap(int A[], int n)
+{
+
+	std::swap(A[0], A[n - 1]);
+	int curr = 0;
+	while (true)
+	{
+		int lchild = (curr + 1) * 2 - 1;
+		int rchild = (curr + 1) * 2;
+		if (rchild > n - 2)
+		{
+			if (lchild == n - 2 && A[lchild] > A[curr])
+				std::swap(A[lchild], A[curr]);
+			break;
+		}
+		int max = A[lchild] > A[rchild] ? lchild : rchild;
+		if (A[max] > A[curr])
+			std::swap(A[max], A[curr]);
+		else
+			break;
+		curr = max;
+	}
+}
+
+void Heap_Sort(int A[], int n)
+{
+	Create_MaxHeap(A, n);
+	for(int i = n; i > 0; i--)
+		Delete_from_MaxHeap(A, i);
+}
+
+void Bucket_Sort(int A[], int n)
+{
+	int max = Max(A, n) + 1;
+	std::vector<node*> Bin(max, nullptr);
+	for (int i = 0; i < n; i++)
+	{
+		node* t = new node(A[i]);
+		t->next = Bin[A[i]];
+		Bin[A[i]] = t;
+	}
+	int k = 0;
+	for (int i = 0; i < max; i++)
+	{
+		while (Bin[i])
+		{
+			A[k++] = Bin[i]->val;
+			node* t = Bin[i];
+			Bin[i] = Bin[i]->next;
+			delete t;
+		}
+	}
+}
+
+void BubbleSort(int A[], int n)
+{
+	
+	for (int i = 0; i < n - 1; i++)
+	{
+		bool flag = true;
+		for (int j = 0; j < n - i - 1; j++)
+		{
+			if (A[j] > A[j + 1])
+			{
+				std::swap(A[j], A[j + 1]);
+				flag = false;
+			}
+		}
+		if (flag)
+			break;
+	}
+}
+
+void Count_Sort(int A[], int n)
+{
+	int max = Max(A, n) + 1, k = 0;
+	std::vector<int> CS(max, 0);
+	for (int i = 0; i < n; i++)
+		CS[A[i]]++;
+	for (int i = 0; i < max; i++)
+		while (CS[i] > 0)
+		{
+			A[k++] = i;
+			CS[i]--;
+		}
+}
+
+void Insertion_Sort(int A[], int n)
+{
+	for (int i = 1; i < n; i++)
+	{
+		int x = A[i];
+		int j = i-1;
+		while (j>-1 && A[j] > x)
+		{
+			A[j + 1] = A[j];
+			j--;
+		}
+		A[j + 1] = x;
+	}
+}
+
+
+void Insertion_Sort_LL()
+{
+	node* q = head;
+	if (!q)
+		return;
+	node* p = q->next;
+	while (p)
+	{
+		node* save_next = p->next;
+		q->next = p->next;
+		InsertInSorted(p);
+		if (p->next == save_next)
+			q = p;
+		p = save_next;
+	}
+}
+
+void Test_Insertion_Sort_LL();
+
+void Merge(int A[], int l, int mid, int h)
+{
+	int i = l, j = mid + 1, k = 0;
+	int* B = new int[h - l + 1];
+	while (i <= mid && j <= h)
+	{
+		if (A[i] < A[j])
+			B[k++] = A[i++];
+		else
+			B[k++] = A[j++];
+	}
+
+	while (i <= mid)
+		B[k++] = A[i++];
+	while (j <= h)
+		B[k++] = A[j++];
+
+	for (i = l, k = 0; i <= h; i++, k++)
+		A[i] = B[k];
+
+	delete[] B;
+}
+
+void MergeSort(int A[], int l, int h)
+{
+	if (l < h)
+	{
+		int mid = (l + h) / 2;
+		MergeSort(A, l, mid);
+		MergeSort(A, mid + 1, h);
+		Merge(A, l, mid, h);
+	}
+}
+
+int Partition(int A[], int l, int h)
+{
+	int pivot = A[l], i = l, j = h;
+	while (i < j)
+	{
+		do { i++; } while (A[i] <= pivot && i < h);
+		do { j--; } while (A[j] > pivot);
+		if (i < j)
+			std::swap(A[i], A[j]);
+	}
+	std::swap(A[j], A[l]);
+	return j;
+}
+
+void QuickSort(int A[], int l, int h)
+{
+	if (h-l>1)
+	{
+		int pom = Partition(A, l, h);
+		QuickSort(A, l, pom);
+		QuickSort(A, pom+1, h);
+	}
+}
+
+void RadixSort(int A[], int n)
+{
+	std::vector<node*> R(10, nullptr);
+	int exp = 1;
+	int max = Max(A, n);
+
+	while (exp < max)
+	{
+		for (int i = 0; i < n; i++)	//	Punjenje auxilary niza redom po ciframa
+		{
+			int index = (A[i] / exp) % 10;
+			node* t = new node(A[i]);
+			if (!R[index])
+				R[index] = t;
+			else
+			{
+				node* p = R[index];
+				while (p->next)
+				{
+					p = p->next;
+				}
+				p->next = t;
+			}
+		}
+		for (int i = 0, k = 0; i < 10; i++) // Vracanje brojeva nazad u sortirani niz
+		{
+			while (R[i])
+			{
+				A[k++] = R[i]->val;
+				R[i] = R[i]->next;
+			}
+		}
+		exp *= 10;
+	}
+}
+
+void SelectionSort(int A[], int n)
+{
+	for (int i = 0; i < n-1; i++)
+	{
+		int min = i;
+		for (int j = i + 1; j < n; j++)
+		{
+			if (A[j] < A[min])
+				min = j;
+		}
+		std::swap(A[i], A[min]);
+	}
+}
+
+void ShellSort(int A[], int n)
+{
+	int step = n;
+
+	while (step > 1)
+	{
+		step /= 2;
+		for (int i = 0, j = step; j < n; j++, i++)
+		{
+			int before = i;
+			int after = j;
+			while (before >= 0 && A[before] > A[after])
+			{
+				std::swap(A[before], A[after]);
+				after = before;
+				before -= step;
+			}
+		}
+	}
+}
+
+int main()
+{
+	int A[] = { 2,4,1,7,3,5,5,2,3,7 };
+	int n = std::size(A);
+	//Bucket_Sort(A, n);
+	//BubbleSort(A,n);
+	//Count_Sort(A, n);
+	//Heap_Sort(A, n);
+	//Insertion_Sort(A, n);
+	//Test_Insertion_Sort_LL();
+	//MergeSort(A, 0, n - 1);
+	//QuickSort(A, 0, n);
+	//RadixSort(A, n);
+	//SelectionSort(A, n);
+	//ShellSort(A, n);
+
+	for (int i = 0; i < n; i++)
+		std::cout << A[i] << " ";
+}
+
+
+
+void Test_Insertion_Sort_LL()
+{
+	CreateLL_for_I_S();
+	Insertion_Sort_LL();
+
+	while (head)
+	{
+		node* t = head;
+		std::cout << head->val << "->";
+		head = head->next;
+		delete t;
+	}
+}

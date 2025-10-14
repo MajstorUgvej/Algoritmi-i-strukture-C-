@@ -1,0 +1,71 @@
+#include <iostream>
+
+struct node
+{
+	node* left;
+	int val;
+	node* right;
+
+	node(int data) :val(data), left(nullptr), right(nullptr) {};
+};
+
+node* root = nullptr;
+
+int LinearSearch(int &key,const int arr[])
+{
+	int i = 0;
+	while (key != arr[i])
+		i++;
+	return i;
+}
+
+node* GenerateTree(const int preorder[],const int inorder[], int start, int end)
+{
+	
+	static int index = 0;
+	if (start > end)
+		return nullptr;
+	
+	node* t = new node(preorder[index++]);
+
+	if (start == end)
+		return t;
+
+	t->left = GenerateTree(preorder, inorder, start, LinearSearch(t->val, inorder) - 1);
+	t->right = GenerateTree(preorder, inorder, LinearSearch(t->val, inorder) + 1, end);
+
+	return t;
+}
+
+void Inorder(node* p)
+{
+	if (p)
+	{
+		Inorder(p->left);
+		std::cout << p->val << " ";
+		Inorder(p->right);
+	}
+}
+
+void Preorder(node* p)
+{
+	if (p)
+	{
+		std::cout << p->val << " ";
+		Preorder(p->left);
+		Preorder(p->right);
+	}
+}
+
+int main()
+{
+	int preorder[] = { 20,10,5,15,30,25,27,40 };
+	int inorder[] = { 5,10,15,20,25,27,30,40 };
+	int n = sizeof(preorder) / sizeof(preorder[0]);
+	root = GenerateTree(preorder, inorder, 0, n - 1);
+
+	std::cout << "Preorder: "; Preorder(root); std::cout << std::endl;
+	std::cout << "Inorder: "; Inorder(root); std::cout << std::endl;
+
+	
+}

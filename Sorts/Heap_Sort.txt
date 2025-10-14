@@ -1,0 +1,77 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+void CreateHeap(int niz[], int n)
+{
+	for (int i = 1; i < n; i++)
+	{
+		int x = niz[i];
+		int parent = ((i + 1) / 2) - 1;
+		int pom = i;
+		while (parent >= 0 && niz[parent] < x)
+		{
+			std::swap(niz[parent], niz[pom]);
+			parent = ((pom + 1) / 2) - 1;
+		}
+	}
+}
+
+void DeleteFromHeap(int niz[], int h) // do kog indexa je ostao heap
+{
+	int i = 0, lchild, rchild;
+	std::swap(niz[i], niz[h--]);
+
+	while ((i + 1) * 2 < h)
+	{
+		lchild = (i + 1) * 2 - 1;
+		rchild = (i + 1) * 2;
+		if (niz[lchild] > niz[rchild])
+		{
+			if (niz[i] > niz[lchild]) break;
+
+			std::swap(niz[lchild], niz[i]);
+			i = lchild;
+		}
+		else
+		{
+			if (niz[i] > niz[rchild]) break;
+
+			std::swap(niz[rchild], niz[i]);
+			i = rchild;
+		}
+	}
+	lchild = (i + 1) * 2 - 1;
+	if(lchild < h && niz[i] <= niz[lchild])
+		std::swap(niz[lchild], niz[i]);
+
+}
+
+//time: O(logn), space: O(1)
+void HeapSort(int niz[], int n)
+{
+	CreateHeap(niz, n);
+	std::cout << "MARS: ";
+	for (int i = n - 1; i >= 0; i--)
+	{
+		DeleteFromHeap(niz, i);
+		std::cout << niz[i] << " ";
+	}
+	std::cout << '\n';
+}
+
+
+void Display(int niz[], int n)
+{
+	for (int i = 0; i < n; i++)
+		std::cout << niz[i] << " ";
+	std::cout << std::endl;
+}
+
+int main()
+{
+	int niz[] = { 9,5,16,8,13,6,12,10,4,2,3 };
+	int n = std::size(niz);
+	HeapSort(niz, n);
+	Display(niz, n);
+}

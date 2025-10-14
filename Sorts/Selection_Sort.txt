@@ -1,0 +1,41 @@
+#include <iostream>
+
+/*
+	Comparisons: n^2
+	Swaps: n
+	Adaptive: no
+	Stable: no
+*/
+
+//time: O(n^2), space: O(1)
+void SelectionSort(int niz[], int n)	//Ima k-passes kao u bubble sortu
+{
+	for (int i = 0; i < n-1; i++)
+	{
+		int k = i;
+		for (int j = i + 1; j < n; j++)
+		{
+			if (niz[j] < niz[k])
+				k = j;
+		}
+		int temp = niz[i];
+		niz[i] = niz[k];
+		niz[k] = temp;
+	}
+}
+
+void Display(int niz[], int n)
+{
+	for (int i = 0; i < n; i++)
+		std::cout << niz[i] << " ";
+	std::cout << std::endl;
+}
+
+int main()
+{
+	int niz[] = { 8,6,3,2,5,4 };
+	int n = sizeof(niz) / sizeof(niz[0]);
+	SelectionSort(niz, n);
+
+	Display(niz, n);
+}

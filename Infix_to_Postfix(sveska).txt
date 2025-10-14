@@ -1,0 +1,137 @@
+#include <iostream>
+
+using namespace std;
+
+class Stack {
+private:
+    int size;
+    int top;
+    char* S;
+public:
+    Stack(int size);
+    ~Stack();
+    void push(char x);
+    char pop();
+    int isEmpty();
+    char stackTop();
+};
+
+Stack::Stack(int size) {
+    this->size = size;
+    top = -1;
+    S = new char[size];
+}
+
+Stack::~Stack() {
+    delete[] S;
+}
+
+void Stack::push(char x) {
+    if (top == size - 1) {
+        cout << "Stack Overflow!" << endl;
+    }
+    else {
+        top++;
+        S[top] = x;
+    }
+}
+
+char Stack::pop() {
+    char x = '\0'; // null character as default
+    if (isEmpty()) {
+        cout << "Stack Underflow!" << endl;
+    }
+    else {
+        x = S[top];
+        top--;
+    }
+    return x;
+}
+
+int Stack::isEmpty() {
+    return top == -1;
+}
+
+char Stack::stackTop() {
+    if (isEmpty()) {
+        return '\0'; // Indicating empty stack
+    }
+    return S[top];
+}
+
+
+bool isOperator(char c)
+{
+    if (c <= 122 && c >= 97)    // ako je malo slovo
+        return false;
+    return true;
+}
+
+int priorityOut(char c)
+{
+    if (c == '+' || c == '-')
+        return 1;
+    if (c == '*' || c == '/')
+        return 3;
+    if (c == '^')
+        return 6;
+    if (c == '(')
+        return 7;
+    if (c == ')')
+        return 0;
+}
+
+int priorityIn(char c)
+{
+    if (c == '+' || c == '-')
+        return 2;
+    if (c == '*' || c == '/')
+        return 4;
+    if (c == '^')
+        return 5;
+    if (c == '(')
+        return 0;
+    return -1;
+}
+
+string Inf_to_Post(const string &infix)
+{
+    int n = infix.length();
+    Stack s(n);
+    string postfix = "";
+    postfix.reserve(n);
+
+    int i = 0;
+    while (i < n)
+    {
+        if (!isOperator(infix[i]))
+            postfix += infix[i++];
+        else
+        {
+            if (priorityOut(infix[i]) > priorityIn(s.stackTop()))
+                s.push(infix[i++]);
+            else if (priorityOut(infix[i]) == priorityIn(s.stackTop()))
+            {
+                s.pop();
+                i++;
+            }
+            else
+                postfix += s.pop();
+        }
+    }
+    while (!s.isEmpty())
+    {
+        postfix += s.pop();
+    }
+    return postfix;
+}
+
+
+int main() {
+    string infix = "((a+b)*c)-d^e^f";
+    Stack s(infix.length());
+
+    cout << Inf_to_Post(infix);
+
+    return 0;
+}

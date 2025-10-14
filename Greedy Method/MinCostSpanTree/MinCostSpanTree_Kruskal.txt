@@ -1,0 +1,71 @@
+#include <iostream>
+#include <vector>
+
+void Union(std::vector<int>& A, int u, int v)
+{
+	while (A[u] > 0)
+		u = A[u];
+	while (A[v] > 0)
+		v = A[v];
+
+	if (A[u] > A[v])
+	{
+		A[v] += A[u];
+		A[u] = v;
+	}
+	else
+	{
+		A[u] += A[v];
+		A[v] = u;
+	}
+}
+
+int Find(std::vector<int>& A, int u)
+{
+	while (A[u] > 0)
+		u = A[u];
+	return u;
+}
+
+int KruskalMethod(int edges[][3], int e, int n) { // e-edges, n-vertices
+	int minDest = 0;
+	std::vector<bool> selected(e, false);
+	std::vector<int> dsjset(n + 1, -1);
+	int numE = 0;
+
+	while (numE < n - 1)
+	{
+		int min = INT_MAX, ind = -1;
+		for (int i = 0; i < e; i++)
+		{
+			if (edges[i][2] < min && !selected[i])
+			{
+				min = edges[i][2];
+				ind = i;
+			}
+		}
+		if (ind == -1)
+			break;
+		if (Find(dsjset, edges[ind][0]) != Find(dsjset, edges[ind][1]))
+		{
+			numE++;
+			minDest += edges[ind][2];
+			Union(dsjset, edges[ind][0], edges[ind][1]);
+		}
+		selected[ind] = true;
+	}
+
+
+	return minDest;
+}
+
+int main()
+{
+	int edges[9][3] = { {1,6,10},{1,2,28},{2,3,16},{2,7,14}, 
+		{3,4,12},{4,5,22},{4,7,18},{5,6,25},{5,7,24} };
+
+	int e = 9, n = 7;
+
+	std::cout << "Minimum Cost Spanning tree: " << KruskalMethod(edges, e, n);
+
+}

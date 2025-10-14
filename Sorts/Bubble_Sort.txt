@@ -1,0 +1,46 @@
+#include <iostream>
+
+/*
+	Comparisons - O(n^2)
+	Swaps - O(n^2)
+	Adaptive - yes
+	Stable - yes
+	Extra memory - no
+*/
+
+//time: O(n^2), space: O(1)
+void BubbleSort(int niz[], int n) 
+{
+	bool flag;
+	for (int i = 0; i < n; i++) // Ako zelimo npr. samo 2 najveca(ili najmanja) elementa, onda odradim bubble sort samo 2 puta(i < 2)
+	{
+		flag = false; // da li je vec sortirano
+		for (int j = 1; j < n - i; j++)
+		{
+			if (niz[j-1] > niz[j])
+			{
+				int temp = niz[j-1];
+				niz[j-1] = niz[j];
+				niz[j] = temp;
+				flag = true;
+			}
+		}
+		if (!flag)
+			break;
+	}
+}
+
+void Display(int niz[], int n)
+{
+	for (int i = 0; i < n; i++)
+		std::cout << niz[i] << " ";
+	std::cout << std::endl;
+}
+
+int main()
+{
+	int niz[] = { 3,5,2,4,1,6,9,7,2 };
+	int n = sizeof(niz) / sizeof(niz[0]);
+	BubbleSort(niz, n);
+	Display(niz, n);
+}

@@ -1,0 +1,274 @@
+#include <iostream>
+
+
+struct node {
+	node* left;
+	int val;
+	node* right;
+
+	node(int key) : val(key), left(nullptr), right(nullptr) {};
+};
+
+class BinarySearchTree
+{
+	node* root;
+	void Delete(node *p)
+	{
+		if (p)
+		{
+			Delete(p->left);
+			Delete(p->right);
+			delete p;
+		}
+	}
+public:
+	BinarySearchTree() { root = nullptr; };
+	~BinarySearchTree() { Delete(root); };
+	void Insert(int key);
+	void CreateTree();
+	node* RInsert(int key, node* p);
+	void Preorder(node *p);
+	void Inorder(node* p);
+	void Postorder(node* p);
+	int Height(node *p);
+	node* getRoot() { return root; };
+	node* Delete(int key, node*p);
+	node* Predcesor(node *p);
+	node* Succesor(node* p);
+	int CountDeg2(node* p);
+	int CountDeg1(node* p);
+	int CountDeg0(node* p);
+	int SumOfElem(node* p);
+};
+
+
+int BinarySearchTree::SumOfElem(node* p)
+{
+	int x, y;
+	if (p)
+	{
+		x = SumOfElem(p->left);
+		y = SumOfElem(p->right);
+		return x + y + p->val;
+	}
+	return 0;
+}
+
+int BinarySearchTree::CountDeg1(node* p)
+{
+	int x, y;
+	if (p)
+	{
+		x = CountDeg1(p->left);
+		y = CountDeg1(p->right);
+		if ((p->left && !p->right) || (!p->left && p->right))
+			return x + y + 1;
+		return x + y;
+	}
+	return 0;
+}
+
+int BinarySearchTree::CountDeg0(node* p)
+{
+	int x, y;
+	if (p)
+	{
+		x = CountDeg0(p->left);
+		y = CountDeg0(p->right);
+		if (!p->left && !p->right)
+			return x + y + 1;
+		return x + y;
+	}
+	return 0;
+}
+
+int BinarySearchTree::CountDeg2(node* p)
+{
+	int x, y;
+	if (p)
+	{
+		x = CountDeg2(p->left);
+		y = CountDeg2(p->right);
+		if (p->left && p->right)
+			return x + y + 1;
+		return x + y;
+	}
+	return 0;
+}
+
+
+void BinarySearchTree::Insert(int key)
+{
+	node* t = new node(key);
+
+	if (root == nullptr)
+	{
+		root = t;
+	}
+	else
+	{
+		node* p = root, *q = nullptr;
+		while (p)
+		{
+			q = p;
+			if (key == p->val)
+			{
+				delete t;
+				break;
+			}
+			if (key < p->val)
+				p = p->left;
+			else
+				p = p->right;
+		}
+		if (key < q->val)
+			q->left = t;
+		else
+			q->right = t;
+	}
+}
+
+void BinarySearchTree::CreateTree()
+{
+	int n;
+	std::cout << "Enter the number of keys: ";
+	std::cin >> n;
+	std::cout << "Enter keys: ";
+	for (int i = 0; i < n; i++)
+	{
+		int key;
+		std::cin >> key;
+		Insert(key);
+	}
+}
+
+node* BinarySearchTree::RInsert(int key, node* p)
+{
+	if (!p)
+	{
+		node* t = new node(key);
+		if (root == nullptr)
+			root = t;
+		return t;
+	}
+	if (key < p->val)
+		p->left = RInsert(key, p->left);
+	if (key > p->val)
+		p->right = RInsert(key, p->right);
+	
+	return p;
+}
+
+void BinarySearchTree::Preorder(node* p)
+{
+	if (p)
+	{
+		std::cout << p->val << " ";
+		Preorder(p->left);
+		Preorder(p->right);
+	}
+}
+
+void BinarySearchTree::Postorder(node* p)
+{
+	if (p)
+	{
+		Postorder(p->left);
+		Postorder(p->right);
+		std::cout << p->val << " ";
+	}
+}
+
+int BinarySearchTree::Height(node* p)
+{
+	int x, y;
+	if (p)
+	{
+		x = Height(p->left);
+		y = Height(p->right);
+		return x > y ? x + 1 : y + 1;
+	}
+	return 0;
+}
+
+node* BinarySearchTree::Delete(int key, node* p)
+{
+	if (!p)
+		return nullptr;
+
+	if (key < p->val)
+		p->left = Delete(key, p->left);
+	else if (key > p->val)
+		p->right = Delete(key, p->right);
+	else
+	{
+		node* q;
+		if (Height(p->left) > Height(p->right))
+			q = Predcesor(p);
+		else
+			q = Succesor(p);
+
+		if (q)
+		{
+			int val = q->val;
+			Delete(q->val, p);
+			p->val = val;
+		}
+		else
+		{
+			if (p == root)
+				root = nullptr;
+			delete p;
+			return nullptr;
+		}
+	}
+	return p;
+}
+
+node* BinarySearchTree::Predcesor(node* p)
+{
+	p = p->left;
+	if (p)
+		while (p->right)
+			p = p->right;
+	return p;
+}
+
+node* BinarySearchTree::Succesor(node* p)
+{
+	p = p->right;
+	if (p)
+		while (p->left)
+			p = p->left;
+	return p;
+}
+
+void BinarySearchTree::Inorder(node* p)
+{
+	if (p)
+	{
+		Inorder(p->left);
+		std::cout << p->val << " ";
+		Inorder(p->right);
+	}
+}
+
+
+
+int main()
+{
+	BinarySearchTree drvo;
+	drvo.CreateTree();
+	//drvo.Delete(20,drvo.getRoot());
+
+	std::cout << std::endl;
+	std::cout << "Preorder: "; drvo.Preorder(drvo.getRoot()); std::cout << std::endl;
+	std::cout << "Inorder: "; drvo.Inorder(drvo.getRoot()); std::cout << std::endl;
+	std::cout << "Postorder: "; drvo.Postorder(drvo.getRoot()); std::cout << std::endl;
+
+	std::cout << std::endl;
+	std::cout << "Number of nodes with deg(2): " << drvo.CountDeg2(drvo.getRoot()) << std::endl;
+	std::cout << "Number of nodes with deg(1): " << drvo.CountDeg1(drvo.getRoot()) << std::endl;
+	std::cout << "Number of nodes with deg(0): " << drvo.CountDeg0(drvo.getRoot()) << std::endl;
+	std::cout << "Sum of all elements: " << drvo.SumOfElem(drvo.getRoot()) << std::endl;
+}

@@ -1,0 +1,45 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+/*
+	comparisons: 
+	swaps: 
+	adaptive: yes
+	stable: no
+	extra memory: no
+*/
+
+//time: {O(nlogn), O(n^3/2), O(n^5/3)}, space: O(1)
+void Shell_Sort(int niz[], int n)
+{
+	int gap = n;
+	while (gap > 1)
+	{
+		gap /= 2;
+		for (int lead = gap; lead < n; lead++)
+		{
+			int pom = lead;
+			while (pom - gap >= 0 && niz[pom - gap] > niz[pom])
+			{
+				std::swap(niz[pom - gap], niz[pom]);
+				pom -= gap;
+			}
+		}
+	}
+}
+
+void Display(int niz[], int n)
+{
+	for (int i = 0; i < n; i++)
+		std::cout << niz[i] << " ";
+	std::cout << std::endl;
+}
+
+int main()
+{
+	int niz[] = { 9,5,16,8,13,6,12,10,4,2,3 };
+	int n = std::size(niz);
+	Shell_Sort(niz, n);
+	Display(niz, n);
+}
